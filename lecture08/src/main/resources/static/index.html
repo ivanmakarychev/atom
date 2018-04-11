@@ -27,6 +27,7 @@
 We are using SockJS lib
 https://github.com/sockjs/sockjs-client
 -->
+<!--<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 
 
@@ -53,7 +54,7 @@ https://github.com/sockjs/sockjs-client
     }
 
     function login() {
-        var name = $('#nameform').serialize();
+
 //        var settings = {
 //            "method": "POST",
 //            "crossDomain": true,
@@ -62,7 +63,21 @@ https://github.com/sockjs/sockjs-client
 //        };
 //
 //        $.ajax(settings).done(function (response) {
-        initSock();
+
+        var name = $('#name').val();
+        console.log(name);
+        var loginData = JSON.stringify(
+        {
+            "topic": "LOGIN",
+            "data": {
+                "sender": name
+            }
+        });
+
+        initSock(loginData);
+
+
+
 //        }).fail(function (jqXHR, textStatus) {
 //            alert(jqXHR.status + " " + jqXHR.statusText + ". " + jqXHR.responseText);
 //            console.log(jqXHR.status + " " + jqXHR.statusText + ". " + jqXHR.responseText);
@@ -70,10 +85,11 @@ https://github.com/sockjs/sockjs-client
 //
     }
 
-    function initSock() {
+    function initSock(loginData) {
         sock = new SockJS('http://' + host + ':' + port + '/' + path);
         sock.onopen = function() {
             console.log('open');
+            sock.send(loginData);
             updateHistory();
             setInterval(updateHistory, 10000);
         };
@@ -88,7 +104,7 @@ https://github.com/sockjs/sockjs-client
     function updateHistory() {
         var history = JSON.stringify(
             {
-                "topic" : "history"
+                "topic" : "HISTORY"
             }
         );
         sock.send(history)
