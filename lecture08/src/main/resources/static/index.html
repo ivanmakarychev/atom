@@ -43,7 +43,7 @@ https://github.com/sockjs/sockjs-client
 
         var msgData = JSON.stringify(
         {
-            "topic": "message",
+            "topic": "MESSAGE",
             "data": {
                 "sender": name,
                 "msg": msg
@@ -66,15 +66,25 @@ https://github.com/sockjs/sockjs-client
 
         var name = $('#name').val();
         console.log(name);
-        var loginData = JSON.stringify(
-        {
+
+        name = "Chakka";
+
+        var loginData = {
             "topic": "LOGIN",
             "data": {
                 "sender": name
             }
-        });
+        };
 
-        initSock(loginData);
+        <!--var loginData = JSON.stringify(-->
+        <!--{-->
+            <!--"topic": "LOGIN",-->
+            <!--"data": {-->
+                <!--"sender": name-->
+            <!--}-->
+        <!--});-->
+
+        initSock(JSON.stringify(loginData));
 
 
 

@@ -22,11 +22,11 @@ public class Message {
         this.data = data;
     }
 
-    Topic getTopic() {
+    public Topic getTopic() {
         return topic;
     }
 
-    MessageData getData() {
+    public MessageData getData() {
         return data;
     }
 

@@ -25,7 +25,14 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 
         Message msg = JsonHelper.fromJson(message.getPayload(), Message.class);
 
-
+        switch (msg.getTopic()) {
+            case LOGIN:
+                login(msg.getData().getSender());
+                break;
+            default:
+                System.out.println("unexpected topic");
+                return;
+        }
 
         System.out.println("parsed " + msg);
 
@@ -41,4 +48,8 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
         super.afterConnectionClosed(session, closeStatus);
     }
 
+    private void login(String login) {
+        System.out.println(login
+        );
+    }
 }
