@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Broken implementation of billing service
@@ -19,7 +22,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("billing")
 public class BillingResource {
-    private Map<String, Account> userToMoney = new HashMap<>();
+    private Map<String, Account> userToMoney = new ConcurrentHashMap<>();
 
     /**
      * curl -XPOST localhost:8080/billing/addUser -d "user=sasha&money=100000"
@@ -57,14 +60,27 @@ public class BillingResource {
             return ResponseEntity.badRequest().body("No such user\n");
         }
 
-        Account fromUserAcc = userToMoney.get(fromUser);
-        if (fromUserAcc.getMoney() < money) {
-            return ResponseEntity.badRequest().body("Not enough money to send\n");
+        Account firstAccount;
+        Account secondAccount;
+        if (fromUser.compareTo(toUser) < 0) {
+            firstAccount = userToMoney.get(fromUser);
+            secondAccount = userToMoney.get(toUser);
+        } else {
+            firstAccount = userToMoney.get(toUser);
+            secondAccount = userToMoney.get(fromUser);
         }
-        synchronized (this) {
-            fromUserAcc.setMoney(fromUserAcc.getMoney() - money);
-            userToMoney.get(toUser).setMoney(userToMoney.get(toUser).getMoney() + money);
+
+        synchronized (firstAccount) {
+            synchronized (secondAccount) {
+                Account fromUserAcc = userToMoney.get(fromUser);
+                if (fromUserAcc.getMoney() < money) {
+                    return ResponseEntity.badRequest().body("Not enough money to send\n");
+                }
+                fromUserAcc.setMoney(fromUserAcc.getMoney() - money);
+                userToMoney.get(toUser).setMoney(userToMoney.get(toUser).getMoney() + money);
+            }
         }
+
         return ResponseEntity.ok("Send success\n");
     }
 

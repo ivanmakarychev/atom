@@ -1,32 +1,27 @@
 package ru.atom.lecture11.billing;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
+/**
+ * Created by Ivan Makarychev on 23.04.18.
+ */
 public class Account {
-    private static AtomicInteger counter = new AtomicInteger();
-    private final Integer id;
-    private final String name;
-    private Integer money;
+    int money;
+    final String name;
 
-    public Account(String name, Integer money) {
-        this.id = counter.incrementAndGet();
-        this.name = name;
+    public Account(String user, int money) {
+        this.name = user;
         this.money = money;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Integer getMoney() {
+    public int getMoney() {
         return money;
     }
 
-    public void setMoney(Integer money) {
+    public void setMoney(int money) {
         this.money = money;
+    }
+
+    @Override
+    public int compareTo(Account other) {
+        return name.compareTo(other.name);
     }
 }
